@@ -16761,10 +16761,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 46739898}
   - {fileID: 2137395896942627640}
   - {fileID: 580331132}
   - {fileID: 1937166902}
-  - {fileID: 46739898}
   - {fileID: 459107376}
   - {fileID: 1446934740}
   - {fileID: 1723874843502269828}
@@ -31804,6 +31804,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1177272032}
     m_Modifications:
+    - target: {fileID: 5055698509961064897, guid: 6d6991dbbdeecb1488bbf78c063d1235, type: 3}
+      propertyPath: m_Name
+      value: RuneStone
+      objectReference: {fileID: 0}
     - target: {fileID: 5055698509961064898, guid: 6d6991dbbdeecb1488bbf78c063d1235, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -31859,8 +31863,29 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5055698509961064897, guid: 6d6991dbbdeecb1488bbf78c063d1235, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5055698509990871162}
   m_SourcePrefab: {fileID: 100100000, guid: 6d6991dbbdeecb1488bbf78c063d1235, type: 3}
+--- !u!1 &5055698509990871161 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5055698509961064897, guid: 6d6991dbbdeecb1488bbf78c063d1235, type: 3}
+  m_PrefabInstance: {fileID: 5055698509990871160}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5055698509990871162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5055698509990871161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d38f053831f3e74b958861dc2f29568, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RuneStone
+  maxHealth: 100
 --- !u!1001 &5152450809945780874
 PrefabInstance:
   m_ObjectHideFlags: 0
