@@ -41,17 +41,26 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Background
+  - name: Ground
     uniqueID: 3397439995
     locked: 0
-  - name: Environment
+  - name: Decor
     uniqueID: 2693910067
     locked: 0
-  - name: Player
+  - name: Object
     uniqueID: 1379186117
     locked: 0
-  - name: Foreground
+  - name: Characters
     uniqueID: 1154050387
+    locked: 0
+  - name: Projectiles
+    uniqueID: 3242956147
+    locked: 0
+  - name: VFX
+    uniqueID: 1914486779
+    locked: 0
+  - name: UI
+    uniqueID: 3827462517
     locked: 0
   m_RenderingLayers:
   - Default
