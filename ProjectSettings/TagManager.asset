@@ -25,9 +25,9 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - Layer 1
+  - Layer 2
+  - Layer 3
   - 
   - 
   - 
@@ -41,26 +41,26 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Ground
-    uniqueID: 3397439995
+  - name: Layer 1
+    uniqueID: 2425651459
     locked: 0
-  - name: Decor
-    uniqueID: 2693910067
+  - name: Layer 2
+    uniqueID: 4250941897
     locked: 0
-  - name: Object
-    uniqueID: 1379186117
+  - name: Layer 3
+    uniqueID: 4189426099
     locked: 0
   - name: Characters
-    uniqueID: 1154050387
+    uniqueID: 1843570255
     locked: 0
   - name: Projectiles
-    uniqueID: 3242956147
+    uniqueID: 2256308867
     locked: 0
   - name: VFX
-    uniqueID: 1914486779
+    uniqueID: 1555847225
     locked: 0
   - name: UI
-    uniqueID: 3827462517
+    uniqueID: 128983393
     locked: 0
   m_RenderingLayers:
   - Default
