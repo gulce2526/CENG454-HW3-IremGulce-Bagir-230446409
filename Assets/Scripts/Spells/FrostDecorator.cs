@@ -8,6 +8,7 @@ public class FrostDecorator : SpellDecorator
     [SerializeField] private float slowAmount = 0.5f;
     [SerializeField] private float slowDuration = 2f;
     [SerializeField] private GameObject frostProjectilePrefab;
+    [SerializeField] private GameObject frostHitVFX;
 
     public override float GetDamage() => wrappedSpell.GetDamage() + bonusDamage;
     public override float GetManaCost() => wrappedSpell.GetManaCost() + bonusManaCost;
@@ -28,16 +29,20 @@ public class FrostDecorator : SpellDecorator
     public override void Apply(GameObject target)
     {
         wrappedSpell.Apply(target);
-        StartCoroutine(ApplySlow(target));
+
+        if (frostHitVFX != null)
+            Instantiate(frostHitVFX, target.transform.position, Quaternion.identity);
+
+        Enemy enemy = target.GetComponent<Enemy>();
+        if (enemy != null)
+            StartCoroutine(ApplySlow(enemy));
     }
 
-    private IEnumerator ApplySlow(GameObject target)
+    private IEnumerator ApplySlow(Enemy enemy)
     {
-        Enemy enemy = target.GetComponent<Enemy>();
-        if (enemy == null) yield break;
-
         enemy.ApplySlow(slowAmount);
         yield return new WaitForSeconds(slowDuration);
-        enemy.RemoveSlow();
+        if (enemy != null)
+            enemy.RemoveSlow();
     }
 }

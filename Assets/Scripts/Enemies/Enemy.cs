@@ -18,6 +18,12 @@ public class Enemy : MonoBehaviour, IDamageable, IPoolable
     public float CurrentHealth => currentHealth;
     public bool IsDead => currentHealth <= 0;
 
+    private void Start()
+    {
+        movementStrategy = GetComponent<IMovementStrategy>();
+        attackStrategy = GetComponent<IAttackStrategy>();
+    }
+
     public void SetStrategies(IMovementStrategy movement, IAttackStrategy attack)
     {
         movementStrategy = movement;

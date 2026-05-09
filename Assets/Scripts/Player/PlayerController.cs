@@ -104,6 +104,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         currentSpell.Cast(direction, transform.position);
         currentMana -= manaCost;
+        animator.SetTrigger("attack"); 
     }
 
     private void HandleSpellUnlocked(int spellLevel)
@@ -122,10 +123,16 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (IsDead) return;
         currentHealth -= amount;
+
         if (IsDead)
         {
+            animator.SetTrigger("die");
             GameEvents.PlayerDied();
             Debug.Log("Sorcerer defeated!");
+        }
+        else
+        {
+            animator.SetTrigger("hurt");
         }
     }
 
