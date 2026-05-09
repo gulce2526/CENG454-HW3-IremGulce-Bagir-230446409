@@ -3,6 +3,17 @@ using UnityEngine;
 public class RushMovement : MonoBehaviour, IMovementStrategy
 {
     [SerializeField] private float speed = 3f;
+    private float originalSpeed;
+
+    private void Start()
+    {
+        originalSpeed = speed;
+    }
+
+    public void SetSpeedMultiplier(float multiplier)
+    {
+        speed = originalSpeed * multiplier;
+    }
 
     public void Move(Transform self, Transform target)
     {

@@ -4,6 +4,17 @@ public class ArcherMovement : MonoBehaviour, IMovementStrategy
 {
     [SerializeField] private float preferredDistance = 6f;
     [SerializeField] private float speed = 2f;
+    private float originalSpeed;
+
+    private void Start()
+    {
+        originalSpeed = speed;
+    }
+
+    public void SetSpeedMultiplier(float multiplier)
+    {
+        speed = originalSpeed * multiplier;
+    }
 
     public void Move(Transform self, Transform target)
     {
