@@ -50,17 +50,5 @@ TagManager:
   - name: Layer 3
     uniqueID: 4189426099
     locked: 0
-  - name: Characters
-    uniqueID: 1843570255
-    locked: 0
-  - name: Projectiles
-    uniqueID: 2256308867
-    locked: 0
-  - name: VFX
-    uniqueID: 1555847225
-    locked: 0
-  - name: UI
-    uniqueID: 128983393
-    locked: 0
   m_RenderingLayers:
   - Default
