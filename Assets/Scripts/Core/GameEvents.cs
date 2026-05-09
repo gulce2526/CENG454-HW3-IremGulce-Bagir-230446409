@@ -9,6 +9,7 @@ public static class GameEvents
     public static event Action OnGameWon;
     public static event Action<int> OnOrbCollected;
     public static event Action<int> OnSpellUnlocked;
+    public static event Action OnPlayerDied;
 
     public static void CoreDamaged(float amount) => OnCoreDamaged?.Invoke(amount);
     public static void CoreDestroyed() => OnCoreDestroyed?.Invoke();
@@ -17,4 +18,5 @@ public static class GameEvents
     public static void GameWon() => OnGameWon?.Invoke();
     public static void OrbCollected(int score) => OnOrbCollected?.Invoke(score);
     public static void SpellUnlocked(int spellLevel) => OnSpellUnlocked?.Invoke(spellLevel);
+    public static void PlayerDied() => OnPlayerDied?.Invoke();
 }
