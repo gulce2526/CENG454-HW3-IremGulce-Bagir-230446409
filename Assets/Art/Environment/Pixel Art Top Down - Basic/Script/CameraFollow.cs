@@ -17,8 +17,7 @@ namespace Cainos.PixelArtTopDown_Basic
         private void Start()
         {
             if (target == null) return;
-
-            offset = transform.position - target.position;
+            offset = new Vector3(0, 0, -10);  // center on player, keep Z distance
         }
 
         private void Update()

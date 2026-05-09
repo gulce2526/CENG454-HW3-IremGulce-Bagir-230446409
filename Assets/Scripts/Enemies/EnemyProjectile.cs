@@ -7,6 +7,7 @@ public class EnemyProjectile : MonoBehaviour, IPoolable
     private float damage;
     private float lifeTime = 5f;
     private float spawnTime;
+    private ObjectPool myPool;
 
     public void Initialize(Vector2 dir, float spd, float dmg)
     {
@@ -16,12 +17,17 @@ public class EnemyProjectile : MonoBehaviour, IPoolable
         spawnTime = Time.time;
     }
 
+    public void SetPool(ObjectPool pool)
+    {
+        myPool = pool;
+    }
+
     private void Update()
     {
         transform.Translate(direction * speed * Time.deltaTime);
 
         if (Time.time - spawnTime > lifeTime)
-            OnReturnToPool();
+            ReturnSelf();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -30,8 +36,16 @@ public class EnemyProjectile : MonoBehaviour, IPoolable
         if (target != null)
         {
             target.TakeDamage(damage);
-            OnReturnToPool();
+            ReturnSelf();
         }
+    }
+
+    private void ReturnSelf()
+    {
+        if (myPool != null)
+            myPool.Return(gameObject);
+        else
+            gameObject.SetActive(false);
     }
 
     public void OnSpawn()
@@ -41,6 +55,8 @@ public class EnemyProjectile : MonoBehaviour, IPoolable
 
     public void OnReturnToPool()
     {
-        Destroy(gameObject);
+        direction = Vector2.zero;
+        speed = 0;
+        damage = 0;
     }
 }

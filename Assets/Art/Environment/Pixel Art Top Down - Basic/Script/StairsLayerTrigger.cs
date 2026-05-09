@@ -1,15 +1,11 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Cainos.PixelArtTopDown_Basic
 {
-    //when object enter or exit the trigger, put it to the assigned layer and sorting layers base on the direction
-    //used in the stairs objects for player to travel between layers
-
     public class StairsLayerTrigger : MonoBehaviour
     {
-        public Direction direction;                                 //direction of the stairs
+        public Direction direction;
         [Space]
         public string layerUpper;
         public string sortingLayerUpper;
@@ -17,43 +13,132 @@ namespace Cainos.PixelArtTopDown_Basic
         public string layerLower;
         public string sortingLayerLower;
 
+        [Space]
+        [Tooltip("Seconds to block re-triggering after a layer change.")]
+        public float transitionCooldown = 0.4f;
+
+        private bool onCooldown = false;
+
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (direction == Direction.South && other.transform.position.y < transform.position.y) SetLayerAndSortingLayer(other.gameObject, layerUpper, sortingLayerUpper);
-            else
-            if (direction == Direction.West && other.transform.position.x < transform.position.x) SetLayerAndSortingLayer(other.gameObject, layerUpper, sortingLayerUpper);
-            else
-            if (direction == Direction.East && other.transform.position.x > transform.position.x) SetLayerAndSortingLayer(other.gameObject, layerUpper, sortingLayerUpper);
+            if (!other.CompareTag("Player") || onCooldown) return;
 
-        }
+            Rigidbody2D rb = other.GetComponent<Rigidbody2D>();
+            if (rb == null) return;
 
-        private void OnTriggerExit2D(Collider2D other)
-        {
-            if (direction == Direction.South && other.transform.position.y < transform.position.y) SetLayerAndSortingLayer(other.gameObject, layerLower, sortingLayerLower);
-            else
-            if (direction == Direction.West && other.transform.position.x < transform.position.x) SetLayerAndSortingLayer(other.gameObject, layerLower, sortingLayerLower);
-            else
-            if (direction == Direction.East && other.transform.position.x > transform.position.x) SetLayerAndSortingLayer(other.gameObject, layerLower, sortingLayerLower);
-        }
+            bool goingToUpper = false;
+            bool goingToLower = false;
 
-        private void SetLayerAndSortingLayer( GameObject target, string layer, string sortingLayer )
-        {
-            target.layer = LayerMask.NameToLayer(layer);
-
-            target.GetComponent<SpriteRenderer>().sortingLayerName = sortingLayer;
-            SpriteRenderer[] srs = target.GetComponentsInChildren<SpriteRenderer>();
-            foreach (SpriteRenderer sr in srs)
+            // Velocity tells us which way the player is ACTUALLY moving,
+            // so it works regardless of collider offset or pivot position.
+            switch (direction)
             {
-                sr.sortingLayerName = sortingLayer;
+                case Direction.South:
+                    // Upper platform is to the north  → moving north (velocity.y > 0) = going up
+                    goingToUpper = rb.linearVelocity.y > 0.01f;
+                    goingToLower = rb.linearVelocity.y < -0.01f;
+                    break;
+                case Direction.North:
+                    // Upper platform is to the south  → moving south (velocity.y < 0) = going up
+                    goingToUpper = rb.linearVelocity.y < -0.01f;
+                    goingToLower = rb.linearVelocity.y > 0.01f;
+                    break;
+                case Direction.West:
+                    // Upper platform is to the east   → moving east  (velocity.x > 0) = going up
+                    goingToUpper = rb.linearVelocity.x > 0.01f;
+                    goingToLower = rb.linearVelocity.x < -0.01f;
+                    break;
+                case Direction.East:
+                    // Upper platform is to the west   → moving west  (velocity.x < 0) = going up
+                    goingToUpper = rb.linearVelocity.x < -0.01f;
+                    goingToLower = rb.linearVelocity.x > 0.01f;
+                    break;
+            }
+
+            if (goingToUpper)
+            {
+                Debug.Log($"[StairsLayerTrigger] Going UP → '{layerUpper}'");
+                StartCoroutine(TransitionWithCooldown(other.gameObject, layerUpper, sortingLayerUpper));
+            }
+            else if (goingToLower)
+            {
+                Debug.Log($"[StairsLayerTrigger] Going DOWN → '{layerLower}'");
+                StartCoroutine(TransitionWithCooldown(other.gameObject, layerLower, sortingLayerLower));
             }
         }
 
-        public enum Direction
+        // Exit is kept as a safety net in case the player barely
+        // drifts across the trigger with near-zero velocity on Enter.
+        private void OnTriggerExit2D(Collider2D other)
         {
-            North,
-            South,
-            West,
-            East
-        }    
+            if (!other.CompareTag("Player") || onCooldown) return;
+
+            Rigidbody2D rb = other.GetComponent<Rigidbody2D>();
+            if (rb == null) return;
+
+            bool goingToUpper = false;
+            bool goingToLower = false;
+
+            switch (direction)
+            {
+                case Direction.South:
+                    goingToUpper = rb.linearVelocity.y > 0.01f;
+                    goingToLower = rb.linearVelocity.y < -0.01f;
+                    break;
+                case Direction.North:
+                    goingToUpper = rb.linearVelocity.y < -0.01f;
+                    goingToLower = rb.linearVelocity.y > 0.01f;
+                    break;
+                case Direction.West:
+                    goingToUpper = rb.linearVelocity.x > 0.01f;
+                    goingToLower = rb.linearVelocity.x < -0.01f;
+                    break;
+                case Direction.East:
+                    goingToUpper = rb.linearVelocity.x < -0.01f;
+                    goingToLower = rb.linearVelocity.x > 0.01f;
+                    break;
+            }
+
+            if (goingToUpper)
+                StartCoroutine(TransitionWithCooldown(other.gameObject, layerUpper, sortingLayerUpper));
+            else if (goingToLower)
+                StartCoroutine(TransitionWithCooldown(other.gameObject, layerLower, sortingLayerLower));
+        }
+
+        private IEnumerator TransitionWithCooldown(GameObject target, string layer, string sortingLayer)
+        {
+            onCooldown = true;
+            SetLayerAndSortingLayer(target, layer, sortingLayer);
+            yield return new WaitForSeconds(transitionCooldown);
+            onCooldown = false;
+        }
+
+        private void SetLayerAndSortingLayer(GameObject target, string layer, string sortingLayer)
+        {
+            int layerIndex = LayerMask.NameToLayer(layer);
+            if (layerIndex == -1)
+            {
+                Debug.LogError($"[StairsLayerTrigger] Physics layer '{layer}' not found!");
+                return;
+            }
+
+            if (!System.Array.Exists(SortingLayer.layers, sl => sl.name == sortingLayer))
+            {
+                Debug.LogError($"[StairsLayerTrigger] Sorting layer '{sortingLayer}' not found!");
+                return;
+            }
+
+            // Change physics layer on root AND every child (bones, body parts, etc.)
+            foreach (Transform t in target.GetComponentsInChildren<Transform>(true))
+                t.gameObject.layer = layerIndex;
+
+            // Change sorting layer on every SpriteRenderer in the hierarchy
+            foreach (SpriteRenderer sr in target.GetComponentsInChildren<SpriteRenderer>(true))
+                sr.sortingLayerName = sortingLayer;
+
+            Debug.Log($"[StairsLayerTrigger] '{target.name}' → Layer: '{layer}' | Sorting Layer: '{sortingLayer}'");
+        }
+
+        public enum Direction { North, South, West, East }
     }
 }
