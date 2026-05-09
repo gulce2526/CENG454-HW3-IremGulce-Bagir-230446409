@@ -59,6 +59,20 @@ public class Enemy : MonoBehaviour, IDamageable, IPoolable
         if (IsDead) Die();
     }
 
+    public void ApplySlow(float multiplier)
+    {
+        RushMovement rush = GetComponent<RushMovement>();
+        if (rush != null) rush.SetSpeedMultiplier(multiplier);
+
+        ArcherMovement archer = GetComponent<ArcherMovement>();
+        if (archer != null) archer.SetSpeedMultiplier(multiplier);
+
+        BruteMovement brute = GetComponent<BruteMovement>();
+        if (brute != null) brute.SetSpeedMultiplier(multiplier);
+    }
+
+    public void RemoveSlow() => ApplySlow(1f);
+
     private void Die()
     {
         GameEvents.EnemyKilled(scoreValue);
