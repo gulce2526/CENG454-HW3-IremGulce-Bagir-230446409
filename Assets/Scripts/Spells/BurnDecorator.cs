@@ -8,23 +8,30 @@ public class BurnDecorator : SpellDecorator
     [SerializeField] private float burnDamage = 2f;
     [SerializeField] private float burnDuration = 3f;
     [SerializeField] private float burnTickRate = 1f;
-    [SerializeField] private GameObject burnProjectilePrefab;
-    [SerializeField] private GameObject burnVFX;
+    [SerializeField] private ObjectPool projectilePool;
 
     public override float GetDamage() => wrappedSpell.GetDamage() + bonusDamage;
     public override float GetManaCost() => wrappedSpell.GetManaCost() + bonusManaCost;
 
     public override void Cast(Vector2 direction, Vector2 origin)
     {
-        if (burnProjectilePrefab != null)
+        if (projectilePool == null)
         {
-            GameObject proj = Instantiate(burnProjectilePrefab, origin, Quaternion.identity);
-            PlayerProjectile pp = proj.GetComponent<PlayerProjectile>();
-            if (pp != null)
-                pp.Initialize(direction, GetDamage(), GetRange());
-        }
-        else
             wrappedSpell.Cast(direction, origin);
+            return;
+        }
+
+        GameObject proj = projectilePool.Get();
+        proj.transform.position = origin;
+        proj.transform.rotation = Quaternion.identity;
+
+        PlayerProjectile pp = proj.GetComponent<PlayerProjectile>();
+        if (pp != null)
+        {
+            pp.SetPool(projectilePool);
+            pp.SetSourceSpell(this);
+            pp.Initialize(direction, GetDamage(), GetRange());
+        }
     }
 
     public override void Apply(GameObject target)
@@ -35,13 +42,6 @@ public class BurnDecorator : SpellDecorator
 
     private IEnumerator ApplyBurn(GameObject target)
     {
-        if (burnVFX != null)
-        {
-            GameObject vfx = Instantiate(burnVFX, target.transform.position, Quaternion.identity);
-            vfx.transform.SetParent(target.transform);
-            Destroy(vfx, burnDuration);
-        }
-
         float elapsed = 0f;
         while (elapsed < burnDuration)
         {

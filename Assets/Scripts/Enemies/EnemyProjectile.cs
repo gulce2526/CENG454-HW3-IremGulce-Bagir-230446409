@@ -32,6 +32,8 @@ public class EnemyProjectile : MonoBehaviour, IPoolable
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (!other.CompareTag("Player")) return;  
+
         IDamageable target = other.GetComponent<IDamageable>();
         if (target != null)
         {

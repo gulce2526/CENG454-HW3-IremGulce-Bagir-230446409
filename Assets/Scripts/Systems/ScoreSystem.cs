@@ -5,9 +5,9 @@ public class ScoreSystem : MonoBehaviour
     private int totalScore = 0;
 
     [Header("Spell Unlock Thresholds")]
-    [SerializeField] private int frostUnlockScore = 50;
-    [SerializeField] private int loveUnlockScore = 120;
-    [SerializeField] private int burnUnlockScore = 200;
+    [SerializeField] private int frostUnlockScore = 30;
+    [SerializeField] private int loveUnlockScore = 50;
+    [SerializeField] private int burnUnlockScore = 70;
 
     private bool frostUnlocked = false;
     private bool loveUnlocked = false;

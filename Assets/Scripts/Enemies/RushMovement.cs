@@ -1,24 +1,41 @@
 using UnityEngine;
+using Pathfinding; 
 
+[RequireComponent(typeof(AIPath))] 
 public class RushMovement : MonoBehaviour, IMovementStrategy
 {
     [SerializeField] private float speed = 3f;
     private float originalSpeed;
 
+    
+    private AIPath aiPath;
+
     private void Start()
     {
         originalSpeed = speed;
+
+       
+        aiPath = GetComponent<AIPath>();
+
+       
+        aiPath.maxSpeed = speed;
+
+        
+        aiPath.enableRotation = false;
     }
 
     public void SetSpeedMultiplier(float multiplier)
     {
-        speed = originalSpeed * multiplier;
+        
+        aiPath.maxSpeed = originalSpeed * multiplier;
     }
 
     public void Move(Transform self, Transform target)
     {
-        Vector2 direction = (target.position - self.position).normalized;
-        self.position = Vector2.MoveTowards(self.position,
-            target.position, speed * Time.deltaTime);
+       
+        aiPath.isStopped = false;
+
+        
+        aiPath.destination = target.position;
     }
 }

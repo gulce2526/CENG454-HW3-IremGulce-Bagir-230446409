@@ -2,9 +2,9 @@ using UnityEngine;
 
 public abstract class SpellDecorator : MonoBehaviour, ISpellEffect
 {
-    protected BaseSpell wrappedSpell;
+    protected ISpellEffect wrappedSpell;
 
-    public void SetWrappedSpell(BaseSpell spell)
+    public void SetWrappedSpell(ISpellEffect spell)
     {
         wrappedSpell = spell;
     }
