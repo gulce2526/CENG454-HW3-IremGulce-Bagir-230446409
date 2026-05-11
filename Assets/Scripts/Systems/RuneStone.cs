@@ -19,7 +19,7 @@ public class RuneStone : MonoBehaviour, IDamageable
         if (IsDead) return;
 
         currentHealth -= amount;
-        GameEvents.CoreDamaged(amount);
+        GameEvents.CoreDamaged(currentHealth);
 
         if (IsDead)
         {

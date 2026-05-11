@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class HUDController : MonoBehaviour
 {
@@ -21,6 +22,13 @@ public class HUDController : MonoBehaviour
     [SerializeField] private Color unlockedColor = Color.white;
     [SerializeField] private Color selectedColor = Color.yellow;
 
+    [Header("RuneStone")]
+    [SerializeField] private Slider runeStoneHealthBar;
+    [SerializeField] private RuneStone runeStone;
+
+    [Header("Notifications")]
+    [SerializeField] private TextMeshProUGUI unlockMessageText;
+
     [Header("References")]
     [SerializeField] private PlayerController player;
 
@@ -32,12 +40,23 @@ public class HUDController : MonoBehaviour
     {
         GameEvents.OnOrbCollected += HandleOrbCollected;
         GameEvents.OnSpellUnlocked += HandleSpellUnlocked;
+        GameEvents.OnCoreDamaged += HandleCoreDamaged;
     }
 
     private void OnDisable()
     {
         GameEvents.OnOrbCollected -= HandleOrbCollected;
         GameEvents.OnSpellUnlocked -= HandleSpellUnlocked;
+        GameEvents.OnCoreDamaged -= HandleCoreDamaged;
+    }
+
+    private void Start()
+    {
+        if (unlockMessageText != null)
+            unlockMessageText.gameObject.SetActive(false);
+
+        if (runeStone != null && runeStoneHealthBar != null)
+            runeStoneHealthBar.value = 1f;
     }
 
     private void Update()
@@ -75,6 +94,16 @@ public class HUDController : MonoBehaviour
         unlockedSpellCount = spellLevel + 1;
         selectedSpellIndex = spellLevel;
         UpdateSpellSlots();
+
+        string[] names = { "Base Spell", "Frost Spell", "Love Spell", "Burn Spell" };
+        if (spellLevel < names.Length)
+            StartCoroutine(ShowUnlockMessage($"{names[spellLevel]} Unlocked!\nPress {spellLevel + 1} to use"));
+    }
+
+    private void HandleCoreDamaged(float currentHealth)
+    {
+        if (runeStoneHealthBar != null && runeStone != null)
+            runeStoneHealthBar.value = currentHealth / runeStone.MaxHealth;
     }
 
     private void UpdateSpellSlots()
@@ -92,5 +121,15 @@ public class HUDController : MonoBehaviour
             else
                 spellSlots[i].color = lockedColor;
         }
+    }
+
+    private IEnumerator ShowUnlockMessage(string msg)
+    {
+        if (unlockMessageText == null) yield break;
+
+        unlockMessageText.text = msg;
+        unlockMessageText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(3f);
+        unlockMessageText.gameObject.SetActive(false);
     }
 }
