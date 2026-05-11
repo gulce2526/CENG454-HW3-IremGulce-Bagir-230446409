@@ -4919,7 +4919,7 @@ GameObject:
   - component: {fileID: 5088258618034077538}
   m_Layer: 20
   m_Name: Snow hit
-  m_TagString: Untagged
+  m_TagString: spell
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

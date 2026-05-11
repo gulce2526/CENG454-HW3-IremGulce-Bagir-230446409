@@ -3,8 +3,8 @@ using UnityEngine;
 public class AltarOfHealing : MonoBehaviour
 {
     [Header("Regeneration Rates (Per Second)")]
-    [SerializeField] private float healRate = 10f;
-    [SerializeField] private float manaRate = 15f;
+    [SerializeField] private float healRate = 15f;
+    [SerializeField] private float manaRate = 25f;
 
     private bool isPlayerOnAltar = false;
     private PlayerController player;
