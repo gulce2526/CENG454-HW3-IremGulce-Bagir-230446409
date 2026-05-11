@@ -35,11 +35,15 @@ public class GameManager : MonoBehaviour
         if (gameEnded) return;
         gameEnded = true;
 
-        Time.timeScale = 0f;
+        StartCoroutine(GameOverDelayed());
+    }
 
+    private System.Collections.IEnumerator GameOverDelayed()
+    {
+        yield return new WaitForSeconds(2f);  // wait for die animation
+        Time.timeScale = 0f;
         if (gameOverPanel != null)
             gameOverPanel.SetActive(true);
-
         Debug.Log("Game Over!");
     }
 

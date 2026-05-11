@@ -10,8 +10,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     private float currentHealth;
 
     [Header("Mana")]
-    [SerializeField] private float maxMana = 100f;
-    [SerializeField] private float manaRegenRate = 5f;
+    [SerializeField] private float maxMana = 200f;
     private float currentMana;
 
     [Header("Spells")]
@@ -43,6 +42,11 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         spells = new ISpellEffect[] { baseSpell, frostSpell, loveSpell, burnSpell };
 
+        // Set up the Decorator chain
+        frostSpell.SetWrappedSpell(baseSpell);
+        loveSpell.SetWrappedSpell(frostSpell);
+        burnSpell.SetWrappedSpell(loveSpell);
+
         GameEvents.OnSpellUnlocked += HandleSpellUnlocked;
     }
 
@@ -54,7 +58,6 @@ public class PlayerController : MonoBehaviour, IDamageable
     private void Update()
     {
         HandleMovement();
-        HandleManaRegen();
         HandleSpellSelection();
         HandleSpellCast();
     }
@@ -71,13 +74,6 @@ public class PlayerController : MonoBehaviour, IDamageable
                 moveInput.x > 0 ? 0.35f : -0.35f, 0.35f, 1);
     }
 
-    private void HandleManaRegen()
-    {
-        if (currentMana < maxMana)
-            currentMana = Mathf.Min(maxMana,
-                currentMana + manaRegenRate * Time.deltaTime);
-    }
-
     private void HandleSpellSelection()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1)) selectedSpellIndex = 0;
@@ -91,20 +87,19 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (!Input.GetMouseButtonDown(0)) return;
 
         ISpellEffect currentSpell = spells[selectedSpellIndex];
-        if (currentSpell == null) return;
+        if (currentSpell == null) { Debug.Log("Spell is null!"); return; }
 
-        float manaCost = 0f;
-        if (currentSpell is BaseSpell bs) manaCost = bs.GetManaCost();
-        else if (currentSpell is SpellDecorator sd) manaCost = sd.GetManaCost();
+        float manaCost = currentSpell.GetManaCost();
+        Debug.Log($"Casting spell {selectedSpellIndex}, manaCost={manaCost}, currentMana={currentMana}");
 
-        if (currentMana < manaCost) return;
+        if (currentMana < manaCost) { Debug.Log("Not enough mana!"); return; }
 
         Vector2 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 direction = (mouseWorld - (Vector2)transform.position).normalized;
 
         currentSpell.Cast(direction, transform.position);
         currentMana -= manaCost;
-        animator.SetTrigger("attack"); 
+        animator.SetTrigger("attack");
     }
 
     private void HandleSpellUnlocked(int spellLevel)
@@ -134,6 +129,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             animator.SetTrigger("hurt");
         }
+    }
+
+    public void Heal(float amount)
+    {
+        if (IsDead) return;
+        currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
     }
 
     public void AddMana(float amount)

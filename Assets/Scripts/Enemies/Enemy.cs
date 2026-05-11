@@ -6,6 +6,7 @@ public class Enemy : MonoBehaviour, IDamageable, IPoolable
     [SerializeField] private int scoreValue = 10;
     [SerializeField] private float playerDetectionRange = 6f;
     [SerializeField] private bool ignoresPlayer = false;
+    [SerializeField] private GemType gemType = GemType.Green;
 
     private float currentHealth;
     private IMovementStrategy movementStrategy;
@@ -22,6 +23,7 @@ public class Enemy : MonoBehaviour, IDamageable, IPoolable
     {
         movementStrategy = GetComponent<IMovementStrategy>();
         attackStrategy = GetComponent<IAttackStrategy>();
+        currentHealth = maxHealth;
     }
 
     public void SetStrategies(IMovementStrategy movement, IAttackStrategy attack)
@@ -81,6 +83,19 @@ public class Enemy : MonoBehaviour, IDamageable, IPoolable
 
     private void Die()
     {
+        ObjectPool pool = GemPoolManager.Instance != null
+            ? GemPoolManager.Instance.GetPool(gemType)
+            : null;
+
+        if (pool != null)
+        {
+            GameObject orb = pool.Get();
+            orb.transform.position = transform.position;
+            OrbPickup pickup = orb.GetComponent<OrbPickup>();
+            if (pickup != null)
+                pickup.SetPool(pool);
+        }
+
         GameEvents.EnemyKilled(scoreValue);
         OnReturnToPool();
     }
