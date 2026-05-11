@@ -1,19 +1,40 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using System.Collections;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    [Header("UI References")]
+    [SerializeField] private GameObject gameStartPanel;
     [SerializeField] private GameObject gameOverPanel;
-    [SerializeField] private GameObject gameWonPanel;
+    [SerializeField] private TextMeshProUGUI panelTitleText; // "GAME OVER" or "VICTORY!"
+    [SerializeField] private TextMeshProUGUI scoreText;
 
-    private bool gameEnded = false;
+    [Header("Systems")]
+    [SerializeField] private ScoreSystem scoreSystem;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Start()
+    {
+        // Show start panel and pause game until player clicks Start
+        if (gameStartPanel != null)
+        {
+            gameStartPanel.SetActive(true);
+            Time.timeScale = 0f;
+        }
     }
 
     private void OnEnable()
@@ -32,42 +53,71 @@ public class GameManager : MonoBehaviour
 
     private void HandleGameOver()
     {
-        if (gameEnded) return;
-        gameEnded = true;
-
-        StartCoroutine(GameOverDelayed());
+        StartCoroutine(GameOverSequence());
     }
 
-    private System.Collections.IEnumerator GameOverDelayed()
+    private IEnumerator GameOverSequence()
     {
-        yield return new WaitForSeconds(2f);  // wait for die animation
+        // Wait for death animation
+        yield return new WaitForSeconds(2f);
+
+        // Set title to game over
+        if (panelTitleText != null)
+        {
+            panelTitleText.text = "GAME OVER";
+        }
+
+        // Update final score
+        if (scoreText != null && scoreSystem != null)
+        {
+            scoreText.text = $"Final Score: {scoreSystem.GetTotalScore()}";
+        }
+
+        gameOverPanel.SetActive(true);
         Time.timeScale = 0f;
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(true);
-        Debug.Log("Game Over!");
     }
 
     private void HandleGameWon()
     {
-        if (gameEnded) return;
-        gameEnded = true;
+        // Change title to victory message
+        if (panelTitleText != null)
+        {
+            panelTitleText.text = "VICTORY!";
+        }
 
+        // Update final score
+        if (scoreText != null && scoreSystem != null)
+        {
+            scoreText.text = $"Final Score: {scoreSystem.GetTotalScore()}";
+        }
+
+        gameOverPanel.SetActive(true);
         Time.timeScale = 0f;
+    }
 
-        if (gameWonPanel != null)
-            gameWonPanel.SetActive(true);
-
-        Debug.Log("You won! All waves defeated!");
+    public void StartGame()
+    {
+        if (gameStartPanel != null)
+        {
+            gameStartPanel.SetActive(false);
+        }
+        Time.timeScale = 1f;
     }
 
     public void RestartGame()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
+        );
     }
 
     public void QuitGame()
     {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
         Application.Quit();
+#endif
     }
 }

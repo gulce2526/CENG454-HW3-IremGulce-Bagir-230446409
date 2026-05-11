@@ -9822,7 +9822,7 @@ GameObject:
   - component: {fileID: 6364210885455053386}
   m_Layer: 20
   m_Name: Love hit
-  m_TagString: Untagged
+  m_TagString: spell
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

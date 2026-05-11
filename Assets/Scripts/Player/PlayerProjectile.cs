@@ -37,6 +37,7 @@ public class PlayerProjectile : MonoBehaviour, IPoolable
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player")) return;
+        if (other.CompareTag("RuneStone")) return; // Don't damage our own RuneStone!
 
         IDamageable target = other.GetComponent<IDamageable>();
         if (target != null)
